@@ -7,9 +7,51 @@
     <title>Web Sockets</title>
     </head>
 <body>
-    Nombre:<input type="text" id="txtNombre">
+    <!-- Nombre:<input type="text" id="txtNombre">
     <button id="btnConectar" type="button">Conectar</button>
+<br><br><br> -->
+    <label for=""><input type="text" class="inputName text-center fs-5" placeholder="Ingresa tu nombre" name="message" id="name" maxlength="50" autocomplete="off" /></label>
+
+    <div class="ContainerMessages container" id="messages"></div>
+    <div class="ContainerMessages container" id="messagesname"></div>
+    <form name="publish" class="formmsg">
+        <!-- <label for="">Nombre:<input type="text" name="Name" maxlength="50" id="nameofuser"></label> <br> -->
+        <!-- <span class="spanName" id="SpanName">Choose Your Name:</span> -->
+        <label for=""><input type="text" class="inputtext" id="messageidtext" placeholder="Escribe tu mensaje" name="message" maxlength="50" autocomplete="off" /></label>
+        <!-- <input type="submit" value="Send" id="sendmsg" /> -->
+    </form>
+    <script type="text/javascript">
+        let url = location.host == 'localhost' ?
+            'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
+            `ws://javascript.local/article/websocket/chat/ws` :
+            `wss://javascript.info/article/websocket/chat/ws`;
+        let socket = new WebSocket(url);
+
+        document.forms.publish.onsubmit = function() {
+            let inputName = document.getElementById('name').value;
+            let outgoingMessage = `${inputName}:${this.message.value}`;
+            let messagename = document.createElement('div');
+            UsersConected  = `Se ha conectado ${inputName}`;
+            socket.send(outgoingMessage);
+            socket.send(UsersConected);
+            return false;
+        };
+
+        socket.onmessage = function(event) {
+            let incomingMessage = event.data;
+            showMessage(incomingMessage);
+            console.log(event);
+        };
+
+        socket.onclose = event => console.log(`Closed ${event.code}`);
+
+        function showMessage(message) {
+            let messageElem = document.createElement('div');
+            messageElem.textContent = `${message}`;
+            document.getElementById('messages').prepend(messageElem);
+            document.getElementById('messageidtext').value = '';
+        }
+    </script>
 </body>
 <div id="detalles"></div>
-<script src="js/app.js"></script>
 </html>

@@ -1,13 +1,12 @@
-let socket;
+//let socket;
 //let aviso = document.getElementById("aviso");
 
 const btnConectar = document.getElementById("btnConectar");
 
 btnConectar.addEventListener("click", ()=>{
-
+    let socket = new WebSocket("ws://localhost:8080");
     let nombre = document.getElementById("txtNombre").value;
     console.log(nombre)
-    socket = new WebSocket("ws://localhost:8080");
 
     socket.onopen = function(e) {
         alert("[open] Conexión establecida");
@@ -32,9 +31,6 @@ btnConectar.addEventListener("click", ()=>{
         alert(`[error] ${error.message}`);
     };
 });
-
-
-
 /*socket.onopen = function(e) {
     alert("[open] Conexión establecida");
     alert("Enviando al servidor");
