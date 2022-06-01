@@ -1,5 +1,119 @@
-//let socket;
-//let aviso = document.getElementById("aviso");
+let chat = document.getElementById("chat");
+let users = new Array();
+
+let socket;
+let datbox;
+
+var list = {
+    'datos' :[]
+ };
+
+const btnConectar = document.getElementById("btnConectar");
+const btnSendPriv = document.getElementById("btnSendPriv");
+const usrOnline = document.getElementById("usrOnline");
+const msgs = document.getElementById("msgs");
+const btnSendPub = document.getElementById("btnSendPub");
+let messg= document.getElementById("message");
+let msgPriv = document.getElementById("msgPub");
+let usrPriv = document.getElementById("usrPriv");
+let btnPriv = document.getElementById("btnSendPriv");
+
+btnConectar.addEventListener("click", ()=>{
+    socket = new WebSocket("ws://localhost:8080");
+    let nombre = document.getElementById("usrName").value;
+    let username = {tipo:1, nombre:nombre};
+    socket.onopen = function(e)
+{
+    console.log("Conexión para: "+username.nombre);
+    socket.send(JSON.stringify(username))
+}//Recordatorio: Nunca dejar al final del código!!!
+});
+
+    btnSendPub.addEventListener("click",()=>{
+        let nombre = document.getElementById("usrName").value;
+        let username = {tipo:1, nombre:nombre};
+        datbox = {tipo:2,remitente:username.nombre,msg:messg.value}
+
+        socket.send(JSON.stringify(datbox));
+
+        messg.value = "";
+        });
+
+    btnPriv.addEventListener("click", ()=>{
+        let nombre = document.getElementById("usrName").value;
+        let username = {tipo:1, nombre:nombre};
+
+        datbox = {tipo:3,remitente:username.nombre,dest:usrPriv.value,msg:msgPub.value};
+
+        socket.send(JSON.stringify(datbox));
+
+        usrPriv.value="";
+        msgPriv.value="";
+    });
+
+    
+    socket.onmessage = (event) =>
+    {
+        let evento = JSON.parse(event.data);
+        console.log(evento);
+
+        if(evento.tipo == 1)
+        {
+            let text = `Bienvenido: ${evento.nombre}<br>`
+            chat.innerHTML =  text;
+        }
+        if(evento.tipo == 2){
+
+            let text = `${evento.remitente}: ${evento.msg}<br>`;
+            console.log(text);
+            msgs.innerHTML += text;
+        }
+        if(evento.tipo == 3)
+        {
+            let text = `${evento.remitente} te dice ${evento.msg}<br>`;
+            msgs.innerHTML+=text;
+        }
+    };
+
+    socket.onerror = function(error){
+        alert(`[error] ${error.msg}`);
+    };
+
+    var option = document.createElement("option");
+    for(i=0; i<users.length; i++)
+    {
+       option.innerHTML = users[i];
+       usrOnline.appendChild(option);
+
+    };
+
+
+btnSendPriv.addEventListener("click", ()=>{
+    
+    var mensaje = {
+        'destino' :[]
+     };
+
+    let nombre = document.getElementById("inpnombre").value;
+    let msgPub = document.getElementById("msgPub").value;
+    let usuriodestinatario = document.getElementById("msgPriv").value;
+
+    mensaje.destino.push({
+        "nombre": nombre,
+        "msgPub":msgPub,
+        "usuriodestinatario":usuriodestinatario,
+        "tipodedatos": "2"
+      });
+
+      console.log(mensaje);
+
+    json = JSON.stringify(mensaje);
+    var obj = JSON.parse(json);
+});
+
+
+/*let socket;
+let aviso = document.getElementById("aviso");
 
 const btnConectar = document.getElementById("btnConectar");
 
@@ -31,7 +145,8 @@ btnConectar.addEventListener("click", ()=>{
         alert(`[error] ${error.message}`);
     };
 });
-/*socket.onopen = function(e) {
+
+socket.onopen = function(e) {
     alert("[open] Conexión establecida");
     alert("Enviando al servidor");
     socket.send("Mi nombre es " + nombre);

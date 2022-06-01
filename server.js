@@ -1,21 +1,60 @@
-// const WebSocket = require('ws')
-// let conectados=[];
-// const wss = new WebSocket.Server({ port: 8080 })
+const WebSocket = require('ws')
 
-// wss.on('connection', ws => {
-//   //agregar
-//   ws.on('message', message => {
-//     console.log(`Received message => ${message}`)
-//     conectados.push(ws);
-//     //console.log(conectados)
-//     conectados.forEach(cadaCon=>{
+const users = new Array();
+const wss = new WebSocket.Server({ port: 8080 })
 
-//       cadaCon.send("Llegó uno más")
-//     })
-//   })
+wss.on('connection', ws => {
+    ws.on('message', message => {
+    console.log(`Received message => ${message}`)
+    let mess = JSON.parse(message);
 
-//   ws.send('Hello! Message From Server!!')
-// })
+    if(mess.tipo==1)
+    {
+      users.push({msg:mess.nombre,socket:ws});
+      for(i=0; i<users.length; i++){
+          users[i].socket.send(JSON.stringify(mess));
+        }
+
+    }else if(mess.tipo == 2)
+    {
+      for(let i=0; i<users.length; i++)
+      {
+        users[i].socket.send(JSON.stringify(mess));
+      }
+    }else if(mess.tipo == 3)
+    {
+      for(let i=0; i<users.length; i++)
+      {
+        if(users[i].msg==mess.dest)
+        {
+          users[i].socket.send(JSON.stringify(mess));
+        }
+      }
+    }
+  })
+  //ws.send('Hello! Message From Server!!')
+
+});
+
+/*
+ const WebSocket = require('ws')
+ let conectados=[];
+ const wss = new WebSocket.Server({ port: 8080 })
+
+ wss.on('connection', ws => {
+   //agregar
+   ws.on('message', message => {
+     console.log(`Received message => ${message}`)
+     conectados.push(ws);
+     //console.log(conectados)
+     conectados.forEach(cadaCon=>{
+
+       cadaCon.send("Llegó uno más")
+     })
+   })
+
+   ws.send('Hello! Message From Server!!')
+ })
 
 
 
@@ -70,3 +109,4 @@ if (!module.parent) {
     // log = console.log;
     exports.accept = accept;
 }
+*/
