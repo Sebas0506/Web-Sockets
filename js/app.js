@@ -18,16 +18,31 @@ let msgPriv = document.getElementById("msgPub");
 let usrPriv = document.getElementById("usrPriv");
 let btnPriv = document.getElementById("btnSendPriv");
 
+socket = new WebSocket("ws://localhost:8080");  //Esta estaba en el click
+
+
+
+
+
 btnConectar.addEventListener("click", ()=>{
-    socket = new WebSocket("ws://localhost:8080");
+
     let nombre = document.getElementById("usrName").value;
+
     let username = {tipo:1, nombre:nombre};
-    socket.onopen = function(e)
-{
-    console.log("Conexión para: "+username.nombre);
+
     socket.send(JSON.stringify(username))
-}//Recordatorio: Nunca dejar al final del código!!!
+
 });
+
+
+socket.onopen = function(e) //Al conectar no se sabe quien es, solo que está; esperar que el usuario mande su nombre.
+
+
+{
+
+    console.log("Conectado");;
+
+}//Recordatorio: Nunca dejar al final del código!!!
 
     btnSendPub.addEventListener("click",()=>{
         let nombre = document.getElementById("usrName").value;
@@ -70,7 +85,7 @@ btnConectar.addEventListener("click", ()=>{
         }
         if(evento.tipo == 3)
         {
-            let text = `${evento.remitente} te dice ${evento.msg}<br>`;
+            let text = `${evento.remitente} dice: ${evento.msg}<br>`;
             msgs.innerHTML+=text;
         }
     };
@@ -94,14 +109,14 @@ btnSendPriv.addEventListener("click", ()=>{
         'destino' :[]
      };
 
-    let nombre = document.getElementById("inpnombre").value;
+    let nombre = document.getElementById("usrName").value;
     let msgPub = document.getElementById("msgPub").value;
-    let usuriodestinatario = document.getElementById("msgPriv").value;
+    let usuariodestino = document.getElementById("usrPriv").value;
 
     mensaje.destino.push({
         "nombre": nombre,
         "msgPub":msgPub,
-        "usuriodestinatario":usuriodestinatario,
+        "usuariodestino":usuariodestino,
         "tipodedatos": "2"
       });
 
